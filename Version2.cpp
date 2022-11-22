@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <fstream>
 #include <string>
 #include <iomanip>
@@ -245,16 +245,146 @@ bool esCasillaPremio(const tTablero tablero, int casilla) {
     return premio;
 }
 void efectoTirada(const tTablero tablero, int& casillaJ, int& penalizacionJ) {
+    //SWITCH calcula el caso de avanze retroceso o penalización de la casillaJ
+    tCasilla casilla;
+    switch(casilla){
+    case OCA:
+        cout << "Estas en la casilla Oca: " << casillaJ << endl;
+        casillaJ = saltaCasilla(tablero, casillaJ);
+        cout << "Saltas a la casilla Oca: " << casillaJ << endl;
+        if (casillaJ!=CASILLA_META) { cout << "Y VUELVES A TIRAR" << endl; }
+        break;
+    case DADO1:
+        cout << "Estas en la casilla Dado: " << casillaJ << endl;
+        casillaJ = saltaCasilla(tablero, casillaJ);
+        cout << "Saltas a la casilla Dado: " << casillaJ << endl;
+        if (casillaJ != CASILLA_META) { cout << "Y VUELVES A TIRAR" << endl; }
+        break;
+    case DADO2:
+        cout << "Estas en la casilla Dado: " << casillaJ << endl;
+        casillaJ = saltaCasilla(tablero, casillaJ);
+        cout << "Saltas a la casilla Dado: " << casillaJ << endl;
+        if (casillaJ != CASILLA_META) { cout << "Y VUELVES A TIRAR" << endl; }
+        break;
+    case PUENTE1:
+        cout << "Estas en la casilla Puente: " << casillaJ << endl;
+        casillaJ = saltaCasilla(tablero, casillaJ);
+        cout << "Saltas a la casilla Puente: " << casillaJ << endl;
+        if (casillaJ != CASILLA_META) { cout << "Y VUELVES A TIRAR" << endl; }
+        break;
+    case PUENTE2:
+        cout << "Estas en la casilla Puente: " << casillaJ << endl;
+        casillaJ = saltaCasilla(tablero, casillaJ);
+        cout << "Saltas a la casilla Puente: " << casillaJ << endl;
+        if (casillaJ != CASILLA_META) { cout << "Y VUELVES A TIRAR" << endl; }
+        break;
+    case POSADA:
+        cout << "HAS CAIDO EN LA POSADA." << endl;
+        cout << "PIERDES " << TURNOS_POSADA << " TURNOS" << endl;
+        penalizacionJ = TURNOS_POSADA;
+        break;
+    case CARCEL:
+        cout << "HAS CAIDO EN LA POSADA." << endl;
+        cout << "PIERDES " << TURNOS_CARCEL << " TURNOS" << endl;
+        penalizacionJ = TURNOS_CARCEL;
+        break;
+    case POZO:
+        cout << "HAS CAIDO EN LA POSADA." << endl;
+        cout << "PIERDES " << TURNOS_POZO << " TURNOS" << endl;
+        penalizacionJ = TURNOS_POZO;
+        break;
+    case CALAVERA:
+        cout << "Estas en la casilla Calavera: " << casillaJ << endl;
+        casillaJ = saltaCasilla(tablero, casillaJ);
+        cout << "Retrocedes al inicio: " << casillaJ << endl;
+        break;
+    case LABERINTO:
+        cout << "Estas en la casilla Laberinto: " << casillaJ << endl;
+        casillaJ = saltaCasilla(tablero, casillaJ);
+        cout << "Retrocedes doce casillas: " << casillaJ << endl;
+        break;
 
-    switch(){
-    
-    
     
     
     }
 
 }
+//desplaza a la casilla correspondiente
+int saltaCasilla(const tTablero tablero, int casillaActual) {
+    int i = casillaActual + 1;
+    if (tablero[casillaActual] == OCA) {
+        
+        while (i < CASILLA_META - 1 && tablero[i] != OCA && tablero[i]==DADO1 && tablero[i] == DADO2 && tablero[i] == PUENTE1 && tablero[i] == PUENTE2 && tablero[i] == CALAVERA && tablero[i] == POSADA && tablero[i] == POZO && tablero[i] == LABERINTO
+            && tablero[i] == CARCEL) {
+            i++;
+        }
+    
+    }
+    else if (tablero[casillaActual] == DADO1) {
+        casillaActual = tablero[DADO2];
+    }
+    else if (tablero[casillaActual] == DADO2) {
+        casillaActual = tablero[DADO1];
+    }
+    else if (tablero[casillaActual] == PUENTE1) {
+        casillaActual = tablero[PUENTE2];
+    }
+    else if (tablero[casillaActual] == PUENTE2) {
+        casillaActual = tablero[PUENTE1];
+    }
+    else if (tablero[casillaActual] == CALAVERA) {
+        casillaActual = 1;
+    }
+    else if (tablero[casillaActual] == LABERINTO) {
+        casillaActual = casillaActual-RETROCESO_LABERINTO;
+    }
+    
+}
+
+void tirada(const tTablero tablero, int& casillaActual, int& penalizacion) {
+
+    int dado = 0;
+    cout << endl;
+    if (MODO_DEBUG==true) {
+        cout << "Introduce valor del dado:";
+        cin >> dado;
+        while (dado > 6 || dado < 1) {
+            cout << "ERROR: el numero debe pertenecer al intervalo [1,6]." << endl;
+            cout << "Elige otro numero:";
+            cin >> dado;
+        }
+    }
+    else {
+
+        dado = rand() % 6 + 1;
+        cout << "Valor del dado: " << dado << endl;
+    }
+    casillaActual = casillaActual + dado;
+    if (casillaActual != CASILLA_META) { efectoTirada(tablero, casillaActual, penalizacion); }
+
+}
+void iniciaJugadores(tJugadores casillasJ, tJugadores penalizacionesJ) {
+    for (int i = 0;i < NUM_JUGADORES;i++) { casillasJ[i] = 0; }
+
+    for (int i = 0;i < NUM_JUGADORES;i++) { penalizacionesJ[i] = 0; }
 
 
+}
+int quienEmpieza() {
+    int jugador = 1 + rand() % NUM_JUGADORES;
+    cout << "Empieza el jugador " << jugador << endl;
 
+    return jugador;
+}
+int partida(const tTablero tablero) {
+    tJugadores casillasJug, penalizacionesJug;
+    iniciaJugadores( 0, 0);
+    pintaTablero(tablero,casillasJug);
+    quienEmpieza();
+    while (!CASILLA_META) {
+
+
+   }
+
+}
 
